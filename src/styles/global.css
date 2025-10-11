@@ -80,6 +80,14 @@
     border-radius: 0;
   }
 
+/* horizontal layout */
+.writing-horizontal {
+    writing-mode: horizontal-tb;
+  }
+  .writing-horizontal p {
+    @apply mx-4;
+  }
+  
   /* vertical layout */
   .writing-vertical {
     writing-mode: vertical-rl;

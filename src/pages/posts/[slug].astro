@@ -25,6 +25,7 @@ import BlogPostsLink from '../../components/BlogPostsLink.astro'
 import BlogTagsLink from '../../components/BlogTagsLink.astro'
 import PostCoverImage from '../../components/PostCoverImage.astro'
 import Copyright from '../../components/Copyright.astro'
+import KoFiOverlay  from '../../components/atoms/KoFiOverlay.astro'
 
 export async function getStaticPaths() {
   const posts = await getAllPosts()
@@ -89,11 +90,16 @@ await Promise.all(
 const currentPostIndex = allPosts.findIndex((post) => post.Slug === slug)
 const prevPost = allPosts[currentPostIndex + 1]
 const nextPost = allPosts[currentPostIndex - 1]
-
 let ogImage = ''
-if (post.FeaturedImage && post.FeaturedImage.Url) {
-  ogImage = new URL(filePath(new URL(post.FeaturedImage.Url)), Astro.site)
+if (post.Cover && post.Cover.Url) {
+    ogImage = new URL(filePath(new URL(post.Cover.Url)), Astro.site)
+} else if (post.FeaturedImage && post.FeaturedImage.Url) {
+    ogImage = new URL(filePath(new URL(post.FeaturedImage.Url)), Astro.site)
 }
+// let ogImage = ''
+// if (post.FeaturedImage && post.FeaturedImage.Url) {
+//   ogImage = new URL(filePath(new URL(post.FeaturedImage.Url)), Astro.site)
+// }
 ---
 
 <PostLayout
@@ -111,6 +117,7 @@ if (post.FeaturedImage && post.FeaturedImage.Url) {
       textClass='text-5xl text-white'
     />
     <PostBody blocks={blocks} />
+    <KoFiOverlay />
   </div>
 
   <div slot='footer-content'>

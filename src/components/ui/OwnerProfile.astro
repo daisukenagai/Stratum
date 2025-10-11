@@ -1,0 +1,55 @@
+---
+import { getNavLink } from '../lib/blog-helpers.ts'
+import { Image } from 'astro:assets'
+import ImageLink from '../atoms/ImageLink.astro'
+import faceImage from '../../images/face.jpg'
+import logoNote from '../../images/logo_note.png'
+import logoYoutrust from '../../images/logo_youtrust.png'
+import logoLinkedin from '../../images/logo_linkedin.png'
+
+// export interface Props {
+//   post: {
+//     Title: string
+//     Icon?: {
+//       Type: 'emoji' | 'external'
+//       Emoji?: string
+//       Url?: string
+//     }
+//   }
+//   enableLink: boolean
+//   className?: string
+// }
+
+// const { post, enableLink = true, className } = Astro.props
+
+// let title = post.Title
+---
+
+<div class="writing-horizontal w-96 ml-16 h-fit grid grid-rows-3 gap-4 border rounded-3xl py-4 px-8 mx-4 shadow-md shadow-blue-200">
+  <div class="grid grid-cols-2">
+    <div class="overflow-hidden rounded-full">
+      <ImageLink
+        imgSrc={faceImage}
+        alt="顔のイラスト"
+        class="object-cover"
+      />
+    </div>
+    <div class="comment">
+      <p>
+        属性：Notion,Figma,氷河期
+      </p>
+    </div>
+  </div>
+
+  <div class="media">
+    <div class="grid grid-cols-3 gap-8">
+      <ImageLink url='https://note.com/nagai_daisuke' imgSrc={logoNote} alt='noteのメディアロゴ' />
+      <ImageLink url='https://youtrust.jp/users/daisuke_nagai' imgSrc={logoYoutrust} alt='youtrustのメディアロゴ' />
+      <ImageLink url='https://www.linkedin.com/in/daisuke-nagai/' imgSrc={logoLinkedin} alt='LinkedInのメディアロゴ' />
+    </div>
+  </div>
+
+  <div class="assets">
+    <a href='https://ko-fi.com/Z8Z01HDLJU' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi2.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+  </div>
+</div>

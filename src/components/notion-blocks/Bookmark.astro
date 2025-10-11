@@ -47,6 +47,15 @@ try {
         <div class='bookmark'>
           <a href={url.toString()} target='_blank' rel='noopener noreferrer'>
             <div>
+              {metadata && metadata.image && (
+                <img
+                  src={metadata.image}
+                  alt='Site image of the bookmark'
+                  loading='lazy'
+                />
+              )}
+            </div>
+            <div>
               <div>{metadata && metadata.title}</div>
               <div>{metadata && metadata.description}</div>
               <div>
@@ -59,15 +68,6 @@ try {
                 </div>
                 <div>{url.origin}</div>
               </div>
-            </div>
-            <div>
-              {metadata && metadata.image && (
-                <img
-                  src={metadata.image}
-                  alt='Site image of the bookmark'
-                  loading='lazy'
-                />
-              )}
             </div>
           </a>
         </div>
@@ -85,8 +85,8 @@ try {
   .bookmark {
     display: flex;
     overflow: hidden;
-    width: 100%;
-    max-width: 100%;
+    width: 200px;
+    height: 600px;
     font-size: 0.9rem;
   }
   .bookmark > a {
@@ -98,13 +98,13 @@ try {
     display: flex;
     overflow: hidden;
     user-select: none;
+    padding: 12px 14px 14px;
   }
   .bookmark > a > div:first-child {
-    flex: 4 1 180px;
-    padding: 12px 14px 14px;
     overflow: hidden;
     text-align: left;
     color: var(--fg);
+    margin-bottom: 14px;
   }
   .bookmark > a > div:first-child > div:first-child {
     width: 120px;
