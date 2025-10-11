@@ -20,6 +20,7 @@ import BlogPostsLink from '../components/BlogPostsLink.astro'
 import BlogTagsLink from '../components/BlogTagsLink.astro'
 import PostCoverSimple from '../components/PostCoverSimple.astro'
 import Copyright from '../components/Copyright.astro'
+import OwnerProfile from '../components/ui/OwnerProfile.astro'
 
 const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
   getPosts(NUMBER_OF_POSTS_PER_PAGE),
@@ -31,6 +32,7 @@ const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
 
 <PostLayout>
   <div slot='main-content' class='space-y-8'>
+    <OwnerProfile />
     {
       posts.length === 0 ? (
         <NoContents contents={posts} />

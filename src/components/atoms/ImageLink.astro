@@ -1,0 +1,19 @@
+---
+import { Image } from 'astro:assets'
+
+export interface Props {
+  alt: string
+  imgSrc: ImageMetadata
+  url: string
+}
+
+const {alt, imgSrc, url} = Astro.props
+---
+
+{url? (
+  <a href={url}>
+    <Image src={imgSrc} alt={alt} />
+  </a>
+):(
+    <Image src={imgSrc} alt={alt} />)
+}
