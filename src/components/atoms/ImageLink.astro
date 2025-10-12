@@ -4,16 +4,19 @@ import { Image } from 'astro:assets'
 export interface Props {
   alt: string
   imgSrc: ImageMetadata
-  url: string
+  url?: string
+  class?: string
 }
 
-const {alt, imgSrc, url} = Astro.props
+const { alt, imgSrc, url, class: className } = Astro.props
 ---
 
-{url? (
-  <a href={url}>
-    <Image src={imgSrc} alt={alt} />
-  </a>
-):(
-    <Image src={imgSrc} alt={alt} />)
+{
+  url ? (
+    <a href={url}>
+      <Image class={className} src={imgSrc} alt={alt} />
+    </a>
+  ) : (
+    <Image class={className} src={imgSrc} alt={alt} />
+  )
 }
