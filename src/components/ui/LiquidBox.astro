@@ -1,0 +1,70 @@
+---
+export interface Props {
+  class?: string
+}
+
+const { class: className } = Astro.props
+---
+
+<div class=`liquid ${className}`>
+  <slot />
+</div>
+
+<style>
+  .liquid {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem; /* rounded-3xl と一致 */
+    background: rgba(255, 255, 255, 0.06); /* うっすら白のベース */
+    -webkit-backdrop-filter: saturate(160%) blur(16px);
+    backdrop-filter: saturate(160%) blur(16px); /* macOS風のリキッド感 */
+    box-shadow:
+      inset 0 0 0 1px rgba(99, 179, 237, 0.25),
+      /* 薄いシアンの内側ボーダー */ 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+  /* 上部の柔らかいハイライト + 青みのグロー */
+  .liquid::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.22) 0%,
+        rgba(255, 255, 255, 0) 30%
+      ),
+      radial-gradient(
+        120% 100% at 50% 0%,
+        rgba(147, 197, 253, 0.18) 0%,
+        rgba(147, 197, 253, 0) 70%
+      );
+    mix-blend-mode: screen;
+  }
+
+  /* エッジにだけ薄い青色が載って、内側に向かって透明になるリング */
+  .liquid::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+      100% 100% at 50% 50%,
+      rgba(59, 130, 246, 0) 55%,
+      rgba(59, 130, 246, 0.18) 100%
+    );
+    /* 外周リングだけを表示するマスク（Safari対応含む） */
+    -webkit-mask: radial-gradient(
+      closest-side,
+      transparent calc(100% - 16px),
+      #000 calc(100% - 15px)
+    );
+    mask: radial-gradient(
+      closest-side,
+      transparent calc(100% - 16px),
+      #000 calc(100% - 15px)
+    );
+  }
+</style>
