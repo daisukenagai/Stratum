@@ -1,10 +1,30 @@
 {
   "editor.formatOnSave": true,
-  "[astro]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.formatOnPaste": true,
+  "editor.autoIndent": "full",
+
+  "[astro]": { "editor.defaultFormatter": "astro-build.astro-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  "emmet.includeLanguages": {
+    "astro": "html",
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact"
   },
-  "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "emmet.triggerExpansionOnTab": true,
+  "emmet.preferences": {
+    "output.tagCase": "asis"
   },
-  "prettier.requireConfig": true
+  "editor.tabCompletion": "on",
+  "editor.snippetSuggestions": "top",
+
+  "files.associations": {
+    "*.astro": "astro"
+  },
+
+  "prettier.requireConfig": true,
+  "astro.typescript.plugin.enabled": true
 }
