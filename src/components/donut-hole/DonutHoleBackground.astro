@@ -1,0 +1,252 @@
+<div class="donut-hole-bg" aria-hidden="true">
+  <div id="donut-hole-canvas" class="donut-hole-bg__canvas"></div>
+</div>
+
+<script>
+  import p5 from 'p5'
+
+  type Sketch = p5
+
+  interface PointerState {
+    x: number
+    y: number
+    target: number
+    current: number
+  }
+
+  interface Ring {
+    outerX: number
+    outerY: number
+    innerX: number
+    innerY: number
+    phase: number
+    alpha: number
+    weight: number
+    driftX: number
+    driftY: number
+    noiseSeed: number
+  }
+
+  interface Point {
+    x: number
+    y: number
+  }
+
+  const mount = document.getElementById('donut-hole-canvas')
+
+  if (mount) {
+    const CONFIG = {
+      ringCount: 3,
+      outerX: 274,
+      outerY: 164,
+      innerX: 76,
+      innerY: 48,
+      ringGapX: 18,
+      ringGapY: 14,
+      innerGapX: 7,
+      innerGapY: 5,
+      pointCountDesktop: 180,
+      pointCountMobile: 120,
+      baseWeight: 1.6,
+      weightJitter: 0.55,
+      breatheSpeed: 0.012,
+      breatheAmount: 0.016,
+      distortion: 0.04,
+      pointerRadius: 220,
+      pointerStrength: 22,
+      pointerEase: 0.09,
+      pointerDecay: 0.92
+    }
+
+    const pointer: PointerState = {
+      x: window.innerWidth * 0.5,
+      y: window.innerHeight * 0.5,
+      target: 0,
+      current: 0
+    }
+
+    const handlePointerMove = (event: PointerEvent) => {
+      pointer.x = event.clientX
+      pointer.y = event.clientY
+      pointer.target = 1
+    }
+
+    const handlePointerLeave = () => {
+      pointer.target = 0
+    }
+
+    const sketch = (s: Sketch) => {
+      let rings: Ring[] = []
+      let pointCount = CONFIG.pointCountDesktop
+
+      const clamp = (value: number, min: number, max: number) =>
+        Math.min(Math.max(value, min), max)
+
+      const rebuildRings = () => {
+        pointCount =
+          window.innerWidth < 768
+            ? CONFIG.pointCountMobile
+            : CONFIG.pointCountDesktop
+
+        rings = Array.from({ length: CONFIG.ringCount }, (_, index) => ({
+          outerX: CONFIG.outerX + index * CONFIG.ringGapX,
+          outerY: CONFIG.outerY + index * CONFIG.ringGapY,
+          innerX: CONFIG.innerX + index * CONFIG.innerGapX,
+          innerY: CONFIG.innerY + index * CONFIG.innerGapY,
+          phase: index * 0.38,
+          alpha: 0.11 + index * 0.035,
+          weight:
+            CONFIG.baseWeight +
+            s.random(-CONFIG.weightJitter, CONFIG.weightJitter),
+          driftX: s.random(-12, 12),
+          driftY: s.random(-8, 8),
+          noiseSeed: s.random(1000)
+        }))
+      }
+
+      const buildLoop = (
+        radiusX: number,
+        radiusY: number,
+        centerX: number,
+        centerY: number,
+        time: number,
+        seed: number,
+        dentScale: number
+      ) => {
+        const points: Point[] = []
+
+        for (let index = 0; index < pointCount; index += 1) {
+          const angle = (index / pointCount) * s.TWO_PI
+          const cos = Math.cos(angle)
+          const sin = Math.sin(angle)
+          const noise = s.noise(
+            seed + cos * 0.85 + time * 0.18,
+            seed + sin * 0.85 + time * 0.14
+          )
+          const wobble = 1 + (noise - 0.5) * CONFIG.distortion * 2
+          const x = centerX + cos * radiusX * wobble
+          const y = centerY + sin * radiusY * wobble
+          const pointerDx = pointer.x - x
+          const pointerDy = pointer.y - y
+          const distance = Math.hypot(pointerDx, pointerDy)
+          const influence = clamp(1 - distance / CONFIG.pointerRadius, 0, 1)
+          const push =
+            influence * influence * CONFIG.pointerStrength * pointer.current
+          const directionX = distance > 0 ? pointerDx / distance : 0
+          const directionY = distance > 0 ? pointerDy / distance : 0
+
+          points.push({
+            x: x + directionX * push * dentScale,
+            y: y + directionY * push * dentScale
+          })
+        }
+
+        return points
+      }
+
+      const drawLoop = (points: Point[], alpha: number, weight: number) => {
+        s.stroke(112, 111, 106, alpha * 255)
+        s.strokeWeight(weight)
+        s.beginShape()
+
+        for (const point of points) {
+          s.vertex(point.x, point.y)
+        }
+
+        s.endShape(s.CLOSE)
+      }
+
+      s.setup = () => {
+        const canvas = s.createCanvas(window.innerWidth, window.innerHeight)
+        canvas.parent(mount)
+        canvas.style('display', 'block')
+        canvas.style('pointer-events', 'none')
+        s.pixelDensity(Math.min(window.devicePixelRatio, 1.5))
+        s.noFill()
+        s.strokeJoin(s.ROUND)
+        s.strokeCap(s.ROUND)
+        rebuildRings()
+      }
+
+      s.windowResized = () => {
+        s.resizeCanvas(window.innerWidth, window.innerHeight)
+        rebuildRings()
+      }
+
+      s.draw = () => {
+        s.clear()
+        pointer.current +=
+          (pointer.target - pointer.current) * CONFIG.pointerEase
+        pointer.target *= CONFIG.pointerDecay
+
+        const baseX = s.width * 0.5
+        const baseY = s.height * 0.47
+        const time = s.frameCount * CONFIG.breatheSpeed
+
+        for (const ring of rings) {
+          const breath = 1 + Math.sin(time + ring.phase) * CONFIG.breatheAmount
+          const centerX =
+            baseX + ring.driftX * Math.sin(time * 0.9 + ring.phase)
+          const centerY =
+            baseY + ring.driftY * Math.cos(time * 0.8 + ring.phase)
+
+          const outer = buildLoop(
+            ring.outerX * breath,
+            ring.outerY * breath,
+            centerX,
+            centerY,
+            time,
+            ring.noiseSeed,
+            1
+          )
+          const inner = buildLoop(
+            ring.innerX * breath,
+            ring.innerY * breath,
+            centerX,
+            centerY,
+            time,
+            ring.noiseSeed + 120,
+            0.72
+          )
+
+          drawLoop(outer, ring.alpha, ring.weight)
+          drawLoop(inner, ring.alpha * 0.92, Math.max(0.9, ring.weight * 0.94))
+        }
+      }
+    }
+
+    const instance = new p5(sketch)
+
+    window.addEventListener('pointermove', handlePointerMove, { passive: true })
+    window.addEventListener('pointerdown', handlePointerMove, { passive: true })
+    window.addEventListener('pointerleave', handlePointerLeave, {
+      passive: true
+    })
+
+    window.addEventListener(
+      'pagehide',
+      () => {
+        window.removeEventListener('pointermove', handlePointerMove)
+        window.removeEventListener('pointerdown', handlePointerMove)
+        window.removeEventListener('pointerleave', handlePointerLeave)
+        instance.remove()
+      },
+      { once: true }
+    )
+  }
+</script>
+
+<style>
+  .donut-hole-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .donut-hole-bg__canvas {
+    width: 100%;
+    height: 100%;
+  }
+</style>

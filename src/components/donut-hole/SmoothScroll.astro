@@ -1,0 +1,23 @@
+<script>
+  import Lenis from 'lenis'
+
+  const lenis = new Lenis({
+    duration: 1.2,
+    smoothWheel: true,
+    smoothTouch: false,
+  })
+
+  let rafId = 0
+
+  const onFrame = (time) => {
+    lenis.raf(time)
+    rafId = window.requestAnimationFrame(onFrame)
+  }
+
+  rafId = window.requestAnimationFrame(onFrame)
+
+  window.addEventListener('pagehide', () => {
+    window.cancelAnimationFrame(rafId)
+    lenis.destroy()
+  })
+</script>

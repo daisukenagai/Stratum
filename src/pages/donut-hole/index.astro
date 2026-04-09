@@ -1,0 +1,374 @@
+---
+import DonutHoleBackground from '../../components/donut-hole/DonutHoleBackground.astro'
+import SmoothScroll from '../../components/donut-hole/SmoothScroll.astro'
+import TextParallax from '../../components/donut-hole/TextParallax.astro'
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Donut Hole is a quiet one-page experiment for a designer collective that values margins, uselessness, and play."
+    />
+    <meta name="generator" content={Astro.generator} />
+    <title>Donut Hole</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;500;700&family=Shippori+Mincho:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <DonutHoleBackground />
+    <SmoothScroll />
+    <TextParallax />
+
+    <header class="site-header">
+      <p class="site-header__title">DonutHole</p>
+    </header>
+
+    <main class="story-shell" data-story-shell>
+      <div class="story-stage" data-story-stage>
+        <section class="story-section hero" data-story-section>
+          <h1
+            class="site-title parallax-text"
+            data-story-text
+            data-parallax-profile="heroTitle"
+          >
+            Donut Hole
+          </h1>
+          <p
+            class="lead parallax-text"
+            data-story-text
+            data-parallax-profile="heroLead"
+          >
+            意味と無意味のあいだにある、<br
+            />価値ある空洞のためのデザイナー集合体。
+          </p>
+        </section>
+
+        <section class="story-section statement" data-story-section>
+          <p
+            class="parallax-text"
+            data-story-text
+            data-parallax-profile="statement"
+          >
+            穴は、あとから空いたわけではない。最初から、そこにいる。<br />
+            輪郭は、その空をなぞりゆるやかに形を成す。
+          </p>
+        </section>
+
+        <section class="story-section statement" data-story-section>
+          <p
+            class="parallax-text"
+            data-story-text
+            data-parallax-profile="statement"
+          >
+            だから意味は、いつも中身より先に空を捉えることができる。<br />
+            内と外との間。<br />
+            そこには、何かがあるようだ。
+          </p>
+        </section>
+
+        <section class="story-section statement" data-story-section>
+          <p
+            class="parallax-text"
+            data-story-text
+            data-parallax-profile="statement"
+          >
+            空気かもしれないし、余白かもしれないし、余韻かもしれない。<br />
+            それは、何かであると同時に、何でもないものでもある。
+          </p>
+        </section>
+
+        <section class="story-section statement" data-story-section>
+          <p
+            class="parallax-text"
+            data-story-text
+            data-parallax-profile="statement"
+          >
+            存在のための不在であり、意味のための無意味である。<br />
+            穴は、そこにあること自体が価値であり、意味である。
+          </p>
+        </section>
+
+        <section class="story-section closing" data-story-section>
+          <p
+            class="closing-copy parallax-text"
+            data-story-text
+            data-parallax-profile="closingCopy"
+          >
+            Form is emptiness, <br />
+            emptiness is form.
+          </p>
+        </section>
+      </div>
+      <div class="story-track" aria-hidden="true"></div>
+    </main>
+  </body>
+</html>
+
+<style>
+  :global(:root) {
+    color-scheme: light;
+    --bg: #f5f4f1;
+    --fg: #30302d;
+    --line: rgba(48, 48, 45, 0.18);
+    --soft-line: rgba(48, 48, 45, 0.08);
+    --panel: rgba(255, 255, 255, 0.38);
+  }
+
+  :global(html) {
+    background: var(--bg);
+    scroll-behavior: auto;
+  }
+
+  :global(body) {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(
+        circle at top,
+        rgba(255, 255, 255, 0.75),
+        transparent 45%
+      ),
+      var(--bg);
+    color: var(--fg);
+    font-family: 'Fredoka', sans-serif;
+  }
+
+  .site-header {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 3;
+    width: 100%;
+    padding: 1.1rem 1.4rem;
+    pointer-events: none;
+  }
+
+  .site-header__title {
+    margin: 0;
+    color: rgba(48, 48, 45, 0.389);
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .page-shell {
+    position: relative;
+    z-index: 1;
+    width: min(1120px, calc(100% - 2rem));
+    margin: 0 auto;
+  }
+
+  .story-shell {
+    position: relative;
+    z-index: 1;
+    width: min(1120px, calc(100% - 2rem));
+    margin: 0 auto;
+    --story-track-height: 300svh;
+  }
+
+  .story-track {
+    height: var(--story-track-height);
+  }
+
+  .story-stage {
+    position: sticky;
+    top: 0;
+    min-height: 100svh;
+    overflow: clip;
+  }
+
+  .story-section {
+    position: absolute;
+    inset: 0;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 0;
+  }
+
+  .hero,
+  .statement,
+  .closing {
+  }
+
+  .eyebrow,
+  .caption,
+  .panel h2 {
+    margin: 0;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    font-weight: 500;
+  }
+
+  .eyebrow,
+  .caption {
+    color: rgba(48, 48, 45, 0.55);
+  }
+
+  .site-title,
+  .lead,
+  .closing-copy,
+  .statement p {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(48, 48, 45, 0.92);
+  }
+
+  .site-title {
+    position: relative;
+    top: 24px;
+    margin: 0.4rem 0 1rem;
+    font-size: clamp(4.5rem, 14vw, 11rem);
+    line-height: 0.9;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .lead {
+    margin: 0;
+    font-family: 'Shippori Mincho', serif;
+    font-size: clamp(1.3rem, 2.7vw, 2.4rem);
+    line-height: 1.7;
+    letter-spacing: 0.08em;
+  }
+
+  .statement {
+    align-items: flex-end;
+  }
+
+  .statement p {
+    width: min(100%, 24ch);
+    margin: 0;
+    font-family: 'Shippori Mincho', serif;
+    font-size: clamp(1.8rem, 4vw, 3.8rem);
+    line-height: 1.55;
+    letter-spacing: 0.05em;
+    text-wrap: balance;
+  }
+
+  .statement span {
+    display: inline-block;
+    margin: 0.55em 0;
+    color: rgba(48, 48, 45, 0.84);
+    -webkit-text-stroke: 0 transparent;
+  }
+
+  .grid-section {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    padding: 4rem 0 8rem;
+  }
+
+  .panel {
+    min-height: 14rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.52),
+        rgba(255, 255, 255, 0.16)
+      ),
+      var(--panel);
+    backdrop-filter: blur(10px);
+  }
+
+  .panel p {
+    margin: 0;
+    font-family: 'Shippori Mincho', serif;
+    font-size: 1rem;
+    line-height: 2;
+    color: rgba(48, 48, 45, 0.86);
+  }
+
+  .closing {
+    align-items: center;
+  }
+
+  .closing-copy {
+    margin: 0;
+    font-size: clamp(2.6rem, 6vw, 5.8rem);
+    line-height: 1.02;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .caption {
+    margin-top: 1.2rem;
+  }
+
+  .parallax-text {
+    will-change: transform, opacity, filter;
+    transform: translate3d(0, 0, 0);
+    transform-origin: 50% 100%;
+    backface-visibility: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .parallax-text {
+      will-change: opacity;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .grid-section {
+      grid-template-columns: 1fr;
+      padding-top: 2rem;
+    }
+
+    .panel {
+      min-height: auto;
+      gap: 3rem;
+      border-radius: 2rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .page-shell {
+      width: min(100%, calc(100% - 1.25rem));
+    }
+
+    .hero,
+    .statement,
+    .closing {
+      min-height: auto;
+      padding-top: 5rem;
+    }
+
+    .site-title,
+    .lead,
+    .statement p,
+    .closing-copy {
+      -webkit-text-stroke-width: 0.85px;
+    }
+
+    .lead {
+      max-width: 11em;
+      line-height: 1.9;
+    }
+
+    .statement {
+      align-items: flex-start;
+    }
+
+    .statement p {
+      width: 100%;
+    }
+  }
+</style>
