@@ -26,5 +26,5 @@
   },
 
   "prettier.requireConfig": true,
-  "astro.typescript.plugin.enabled": true,
+  "astro.typescript.plugin.enabled": true
 }
