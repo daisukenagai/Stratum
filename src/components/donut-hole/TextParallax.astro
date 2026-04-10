@@ -1,0 +1,224 @@
+<script>
+  const CONFIG = {
+    // 1セクションあたりの scroll 長
+    sectionScrollLength: 3.6,
+    // fade in 開始位置
+    fadeInStart: 0.04,
+    // fully visible の滞在範囲
+    visibleStart: 0.84,
+    visibleEnd: 0.84,
+    // fade out 開始位置
+    fadeOutEnd: 1,
+    // translateY の量
+    translateY: 0,
+    // scale の最小/最大
+    minScale: 0.985,
+    maxScale: 1,
+    // blur の量
+    blur: 4,
+    // セクション間のクロスフェード量
+    crossfade: 0.14
+  }
+
+  const PROFILES = {
+    heroTitle: {
+      translateX: 0,
+      translateY: 0,
+      minScale: 0.988,
+      maxScale: 1.008,
+      blur: 4,
+      minOpacity: 0.7,
+      maxOpacity: 1
+    },
+    heroLead: {
+      translateY: 1,
+      translateX: 4,
+      minScale: 0.988,
+      maxScale: 1.004,
+      blur: 3,
+      minOpacity: 0.24,
+      maxOpacity: 0.94
+    },
+    statement: {
+      translateY: 0,
+      minScale: 0.986,
+      maxScale: 1.006,
+      blur: 4,
+      minOpacity: 0.16,
+      maxOpacity: 0.96
+    },
+    closingCopy: {
+      translateY: 0,
+      minScale: 0.984,
+      maxScale: 1.008,
+      blur: 4,
+      minOpacity: 0.18,
+      maxOpacity: 0.98
+    },
+    closingCaption: {
+      translateY: 0,
+      minScale: 0.994,
+      maxScale: 1,
+      blur: 2,
+      minOpacity: 0.26,
+      maxOpacity: 0.82
+    }
+  }
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const shell = document.querySelector('[data-story-shell]')
+  const sections = Array.from(document.querySelectorAll('[data-story-section]'))
+
+  if (shell && sections.length > 0) {
+    const items = sections.map((section, sectionIndex) => ({
+      section,
+      sectionIndex,
+      texts: Array.from(section.querySelectorAll('[data-story-text]')).map(
+        (element) => ({
+          element,
+          profileName: element.dataset.parallaxProfile
+        })
+      )
+    }))
+
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
+    const lerp = (start, end, amount) => start + (end - start) * amount
+    let rafId = 0
+
+    const smoothstep = (edge0, edge1, value) => {
+      const x = clamp((value - edge0) / Math.max(edge1 - edge0, 0.0001), 0, 1)
+      return x * x * (3 - 2 * x)
+    }
+
+    const resize = () => {
+      shell.style.setProperty(
+        '--story-track-height',
+        `${window.innerHeight * (sections.length + 1) * CONFIG.sectionScrollLength}px`
+      )
+    }
+
+    const handleResize = () => {
+      resize()
+      scheduleUpdate()
+    }
+
+    const getScrollProgress = () => {
+      const shellBounds = shell.getBoundingClientRect()
+      const total = Math.max(shellBounds.height - window.innerHeight, 1)
+      return clamp(-shellBounds.top / total, 0, 1)
+    }
+
+    const getSectionVisibility = (localProgress) => {
+      const fadeIn = smoothstep(
+        CONFIG.fadeInStart,
+        CONFIG.visibleStart,
+        localProgress
+      )
+      const fadeOut =
+        1 - smoothstep(CONFIG.visibleEnd, CONFIG.fadeOutEnd, localProgress)
+      return clamp(fadeIn * fadeOut, 0, 1)
+    }
+
+    const applyTextStyles = (item, localProgress, reduced) => {
+      const baseProfile = PROFILES[item.profileName]
+
+      if (!baseProfile) {
+        return
+      }
+
+      const visibility = getSectionVisibility(localProgress)
+      const lingering = clamp(
+        1 - smoothstep(1 - CONFIG.crossfade, 1, localProgress),
+        0,
+        1
+      )
+      const intensity = clamp(Math.max(visibility, lingering * 0.08), 0, 1)
+      const opacity = lerp(
+        baseProfile.minOpacity,
+        baseProfile.maxOpacity,
+        intensity
+      )
+
+      if (reduced) {
+        item.element.style.opacity = `${opacity}`
+        item.element.style.transform = 'translate3d(0, 0, 0) scale(1)'
+        item.element.style.filter = 'none'
+        return
+      }
+
+      const translateX = lerp(baseProfile.translateX ?? 0, 0, intensity)
+      const translateY = lerp(
+        baseProfile.translateY ?? CONFIG.translateY,
+        0,
+        intensity
+      )
+      const textScale = lerp(
+        baseProfile.minScale ?? CONFIG.minScale,
+        baseProfile.maxScale ?? CONFIG.maxScale,
+        intensity
+      )
+      const blur = lerp(baseProfile.blur ?? CONFIG.blur, 0, intensity)
+
+      item.element.style.opacity = `${opacity}`
+      item.element.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${textScale})`
+      item.element.style.filter = `blur(${blur}px)`
+    }
+
+    const update = () => {
+      rafId = 0
+      const reduced = reduceMotion.matches
+      const progress = getScrollProgress()
+      const span = Math.max(sections.length, 1)
+
+      for (const item of items) {
+        const sectionStart = item.sectionIndex / span
+        const sectionEnd = (item.sectionIndex + 1) / span
+        const localProgress = clamp(
+          (progress - sectionStart) /
+            Math.max(sectionEnd - sectionStart, 0.0001),
+          0,
+          1
+        )
+        const sectionVisibility = getSectionVisibility(localProgress)
+        const sectionOpacity = reduced
+          ? clamp(sectionVisibility + 0.08, 0, 1)
+          : clamp(sectionVisibility + 0.04, 0, 1)
+
+        item.section.style.opacity = `${sectionOpacity}`
+        item.section.style.pointerEvents =
+          sectionOpacity > 0.08 ? 'auto' : 'none'
+
+        for (const text of item.texts) {
+          applyTextStyles(text, localProgress, reduced)
+        }
+      }
+    }
+
+    const scheduleUpdate = () => {
+      if (rafId !== 0) {
+        return
+      }
+
+      rafId = window.requestAnimationFrame(update)
+    }
+
+    resize()
+    update()
+    window.addEventListener('resize', handleResize, { passive: true })
+    window.addEventListener('scroll', scheduleUpdate, { passive: true })
+    reduceMotion.addEventListener('change', scheduleUpdate)
+    window.addEventListener(
+      'pagehide',
+      () => {
+        if (rafId !== 0) {
+          window.cancelAnimationFrame(rafId)
+        }
+
+        window.removeEventListener('resize', handleResize)
+        window.removeEventListener('scroll', scheduleUpdate)
+        reduceMotion.removeEventListener('change', scheduleUpdate)
+      },
+      { once: true }
+    )
+  }
+</script>

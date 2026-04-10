@@ -1,12 +1,8 @@
 ---
-import { PUBLIC_GA_TRACKING_ID, ENABLE_LIGHTBOX } from '../server-constants.ts'
 import { getDatabase } from '../lib/notion/client.ts'
-import { getNavLink, getStaticFilePath, filePath } from '../lib/blog-helpers.ts'
+import { getNavLink, getStaticFilePath } from '../lib/blog-helpers.ts'
 import '../styles/syntax-coloring.css'
 import '../styles/global.css'
-import GoogleAnalytics from '../components/GoogleAnalytics.astro'
-import SearchModal from '../components/SearchModal.astro'
-import SearchButton from '../components/SearchButton.astro'
 import SiteTitle from '../components/SiteTitle.astro'
 
 
@@ -36,15 +32,6 @@ const siteOGImage = new URL(
   Astro.site
 )
 
-let customIconURL: string
-if (database.Icon && database.Icon.Type === 'file') {
-  try {
-    customIconURL = filePath(new URL(database.Icon.Url))
-  } catch {
-    console.log('Invalid DB custom icon URL: ', database.Icon?.Url)
-  }
-}
-
 const layoutClass = layoutPost ? 'layout-post' : 'layout-index'
 ---
 
@@ -58,7 +45,7 @@ const layoutClass = layoutPost ? 'layout-post' : 'layout-index'
     <title>{siteTitle}</title>
     <meta name='description' content={siteDescription} />
     <link rel='canonical' href={siteURL} />
-    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <meta property='og:url' content={siteURL} />
     <meta property='og:title' content={siteTitle} />
     <meta property='og:description' content={siteDescription} />
@@ -82,7 +69,7 @@ const layoutClass = layoutPost ? 'layout-post' : 'layout-index'
     />
   </head>
   <body>
-    <div class=`${layoutClass} layout-post w-full h-screen`>
+    <div class={`${layoutClass} layout-post w-full h-screen`}>
       <header>
         <SiteTitle
           post={database}

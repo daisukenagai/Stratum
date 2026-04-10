@@ -1,33 +1,15 @@
 ---
 import { NUMBER_OF_POSTS_PER_PAGE } from '../server-constants.ts'
-import {
-  getPosts,
-  getRankedPosts,
-  getAllTags,
-  getNumberOfPages
-} from '../lib/notion/client.ts'
+import { getPosts } from '../lib/notion/client.ts'
 import { getPostLink } from '../lib/blog-helpers.ts'
 import PostLayout from '../layouts/PostLayout.astro'
 import NoContents from '../components/NoContents.astro'
-import PostDate from '../components/PostDate.astro'
-import PostTags from '../components/PostTags.astro'
-import PostTitle from '../components/PostTitle.astro'
-import PostFeaturedImage from '../components/PostFeaturedImage.astro'
 import PostExcerpt from '../components/PostExcerpt.astro'
-import ReadMoreLink from '../components/ReadMoreLink.astro'
-import Pagination from '../components/Pagination.astro'
-import BlogPostsLink from '../components/BlogPostsLink.astro'
-import BlogTagsLink from '../components/BlogTagsLink.astro'
 import PostCoverSimple from '../components/PostCoverSimple.astro'
 import Copyright from '../components/Copyright.astro'
 import OwnerProfile from '../components/ui/OwnerProfile.astro'
 
-const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
-  getPosts(NUMBER_OF_POSTS_PER_PAGE),
-  getRankedPosts(),
-  getAllTags(),
-  getNumberOfPages()
-])
+const posts = await getPosts(NUMBER_OF_POSTS_PER_PAGE)
 ---
 
 <PostLayout>
@@ -48,8 +30,10 @@ const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
                 widthClass='w-80'
                 textClass='text-3xl text-black'
                 textVerticalTop={true}
-              />            <PostExcerpt post={post} />
+              />
+              <PostExcerpt post={post} />
             {/* <ReadMoreLink post={post} /> */}
+            </a>
           </div>
         ))
       )
